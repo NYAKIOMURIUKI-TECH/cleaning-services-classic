@@ -9,4 +9,7 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('cleaning-services-classic');
+  toggleDarkMode() {
+    document.documentElement.classList.toggle('dark');
+  }
 }
