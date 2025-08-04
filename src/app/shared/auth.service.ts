@@ -1,49 +1,48 @@
-// src/app/shared/auth.service.ts
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { User, Role } from './models/user.model';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  private currentUser: User | null = null;
+  private apiUrl = 'http://localhost:8080/api/auth';
 
-  constructor(private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  login(email: string, password: string): boolean {
-    // In real app: fetch user from backend
-    const user: User = {
-      email,
-      password,
-      role: email.includes('admin') ? 'admin' :
-            email.includes('cleaner') ? 'cleaner' : 'customer'
-    };
+  login(email: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap((res: any) => {
+        localStorage.setItem('user', JSON.stringify(res.user));
 
-    this.currentUser = user;
-    localStorage.setItem('user', JSON.stringify(user));
-    this.redirectUser(user.role);
-    return true;
+        if (res.user.role === 'admin') {
+          this.router.navigate(['/admin']);
+        } else if (res.user.role === 'client') {
+          this.router.navigate(['/client']); // ✅ Navigate to client dashboard']);
+        } else if (res.user.role === 'cleaner') {
+          this.router.navigate(['/cleaner']);
+        }
+      }),
+      catchError(err => {
+        alert(err.error.message || 'Login failed');
+        return throwError(() => err);
+      })
+    );
   }
 
-  register(email: string, password: string, role: Role): void {
-    const user: User = { email, password, role };
-    this.currentUser = user;
-    localStorage.setItem('user', JSON.stringify(user));
-    this.redirectUser(role);
-  }
-
-  getUser(): User | null {
-    return this.currentUser ?? JSON.parse(localStorage.getItem('user')!);
-  }
-
-  logout() {
-    this.currentUser = null;
-    localStorage.removeItem('user');
-    this.router.navigate(['/login']);
-  }
-
-  private redirectUser(role: Role) {
-    if (role === 'admin') this.router.navigate(['/admin']);
-    else if (role === 'cleaner') this.router.navigate(['/cleaner']);
-    else this.router.navigate(['/customer']);
+  // ✅ ADD THIS:
+  register(fullName: string, email: string, password: string, role: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, { fullName, email, password, role }).pipe(
+      tap(() => {
+        alert('Registration successful!');
+        this.router.navigate(['/login']);
+      }),
+      catchError(err => {
+        alert(err.error.message || 'Registration failed');
+        return throwError(() => err);
+      })
+    );
   }
 }

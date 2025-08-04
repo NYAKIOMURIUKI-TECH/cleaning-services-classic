@@ -12,13 +12,14 @@ import { Role } from '../../shared/models/user.model';
   styleUrls: ['./register.scss']
 })
 export class Register {
+  fullName = ''; // ✅ Add fullName
   email = '';
   password = '';
-  role: Role = 'customer';
+  role: Role = 'client'; // Default role can be changed in UI if needed
 
   constructor(private auth: AuthService) {}
 
   register() {
-    this.auth.register(this.email, this.password, this.role);
+    this.auth.register(this.fullName, this.email, this.password, this.role).subscribe();
   }
 }
