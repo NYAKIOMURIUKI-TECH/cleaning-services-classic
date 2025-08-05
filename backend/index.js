@@ -1,7 +1,7 @@
 const express = require('express');
 var cors = require('cors');
-const connection = require('./config/connection');
-const authRoutes = require('./routes/auth.routes'); // ← Add this line
+const authRoutes = require('./routes/auth.routes');
+require('./config/connection'); // Ensure DB connection is established
 
 const app = express();
 

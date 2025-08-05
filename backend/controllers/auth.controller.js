@@ -16,7 +16,16 @@ exports.register = (req, res) => {
 
     db.query('INSERT INTO users SET ?', user, (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
-      return res.status(201).json({ message: "User registered successfully" });
+
+      // Return inserted user (without password if preferred)
+      return res.status(201).json({
+        message: "User registered successfully",
+        user: {
+          fullName,
+          email,
+          role
+        }
+      });
     });
   });
 };
@@ -34,9 +43,11 @@ exports.login = (req, res) => {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || 'default_secret',
+      { expiresIn: '1d' }
+    );
 
     res.json({
       message: "Login successful",
