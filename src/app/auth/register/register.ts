@@ -14,7 +14,7 @@ import { Role } from '../../shared/models/user.model';
 export class Register {
   email = '';
   password = '';
-  role: Role = 'customer';
+  role: Role = 'client';
 
   constructor(private auth: AuthService) {}
 
