@@ -1,1 +1,94 @@
-<p>customer works!</p>
+<div class="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
+
+  <!-- Top Bar -->
+  <header class="flex items-center justify-between px-6 py-1 bg-blue-400 text-white shadow">
+    <div class="flex items-center space-x-3">
+      <img src="assets/profile-placeholder.PNG" alt="Profile" class="w-10 h-10 rounded-rectangle-full border-2 border-white" />
+    </div>
+    <h1 class="text-xl font-bold tracking-wide">Welcome to CleanServicePro</h1>
+    <div class="w-10"></div>
+  </header>
+
+  <div class="flex flex-1">
+    <!-- Sidebar -->
+    <nav class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-6 flex flex-col justify-between shadow-md">
+      <ul class="space-y-6 text-base">
+        <li>
+          <a
+            routerLink="/customer/bookings"
+            routerLinkActive="font-bold text-blue-700"
+            class="text-blue-600 hover:text-blue-800 transition">
+            📅 Bookings
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/customer/payments"
+            routerLinkActive="font-bold text-blue-700"
+            class="text-blue-600 hover:text-blue-800 transition">
+            💳 Payments
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/customer/ratings"
+            routerLinkActive="font-bold text-blue-700"
+            class="text-blue-600 hover:text-blue-800 transition">
+            ⭐ Ratings
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/customer/settings"
+            routerLinkActive="font-bold text-blue-700"
+            class="text-blue-600 hover:text-blue-800 transition">
+            ⚙️ Settings
+          </a>
+        </li>
+      </ul>
+      
+
+      <!-- Logout
+      <button (click)="logout()" class="text-red-600 hover:text-red-800 font-semibold mt-8 transition">
+        Logout
+      </button> -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+      <!-- Pending Booking Tile -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">Pending Service</h2>
+        <div *ngIf="myBookings.length > 0; else noBooking">
+          <p class="text-gray-700 dark:text-gray-300">
+            {{ myBookings[0].serviceName }} on {{ myBookings[0].date }} at {{ myBookings[0].time }} - Status: {{ myBookings[0].status }}
+          </p>
+        </div>
+        <ng-template #noBooking>
+          <p class="text-gray-500">No pending services.</p>
+        </ng-template>
+      </div>
+
+      <!-- Two Column Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Block A: Services List -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Service Packages</h2>
+          <ul class="space-y-2">
+            <li *ngFor="let service of services" class="text-gray-700 dark:text-gray-300">
+              {{ service.name }} - {{ service.description }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Block B: Savings -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Your Savings</h2>
+          <p class="text-3xl font-bold text-green-600 dark:text-green-400">Ksh 1,500</p>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">Based on your package discounts</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+</div>
