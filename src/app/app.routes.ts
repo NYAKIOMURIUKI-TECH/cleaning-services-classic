@@ -3,7 +3,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
 import { Register } from './auth/register/register';
-import { Customer } from './dashboard/customer/customer';
+import { Client } from './dashboard/client/client';
 import { Cleaner } from './dashboard/cleaner/cleaner';
 import { Admin } from './dashboard/admin/admin';  
 import{Booking} from './functionalities/booking/booking';
@@ -15,7 +15,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: 'customer', component: Customer },
+  { path: 'client', component: Client },
   {path: 'cleaner', component: Cleaner },
   {path: 'admin', component: Admin },
   { path: 'customer/bookings', component: Booking },

@@ -12,10 +12,10 @@ import { Role } from '../../shared/models/user.model';
   styleUrls: ['./register.scss']
 })
 export class Register {
-  fullName = '';
+  fullName = ''; // ✅ Add fullName
   email = '';
   password = '';
-  role: Role = 'client'; // Default role, can be changed in the template
+  role: Role = 'client';
 
   constructor(private auth: AuthService) {}
 
