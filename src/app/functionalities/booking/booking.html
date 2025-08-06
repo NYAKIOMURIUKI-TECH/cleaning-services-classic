@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-white dark:bg-gray-900">
+  <!-- App Title -->
+  <h1 class="text-2xl font-bold text-center text-blue-600 mb-8">CleanServicePro</h1>
+
+  <!-- Booking Section -->
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+    <!-- Header & Button -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-semibold text-gray-700">My Bookings</h2>
+      <button (click)="toggleBookingForm()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+        Book a Service
+      </button>
+    </div>
+
+    <!-- Booking Form -->
+    <form *ngIf="showForm" (ngSubmit)="confirmBooking()" class="space-y-4 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Service</label>
+          <select [(ngModel)]="booking.service" name="service" required class="w-full border p-2 rounded-md">
+            <option *ngFor="let s of services" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Date</label>
+          <input type="date" [(ngModel)]="booking.date" name="date" required class="w-full border p-2 rounded-md" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Time</label>
+          <input type="time" [(ngModel)]="booking.time" name="time" required class="w-full border p-2 rounded-md" />
+        </div>
+      </div>
+
+      <!-- Confirm Button -->
+      <div class="text-right">
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
+          Confirm Booking
+        </button>
+      </div>
+    </form>
+
+    <!-- Booking List -->
+    <div *ngIf="bookings.length > 0" class="mt-6">
+      <h3 class="text-lg font-semibold mb-4 text-gray-700">Booked Services</h3>
+
+      <div class="border rounded-md overflow-hidden">
+        <div class="grid grid-cols-5 bg-gray-100 text-gray-600 font-medium px-4 py-2">
+          <div>#</div>
+          <div>Service</div>
+          <div>Status</div>
+          <div colspan="2">Actions</div>
+        </div>
+
+        <div *ngFor="let b of bookings; let i = index" class="grid grid-cols-5 border-t px-4 py-3 items-center">
+          <div>{{ i + 1 }}</div>
+          <div>{{ b.service }}</div>
+          <div class="capitalize">{{ b.status }}</div>
+          <div class="space-x-2">
+            <button (click)="viewBooking(b)" class="text-blue-600 hover:underline text-sm">View</button>
+            <button *ngIf="b.status === 'pending'" (click)="deleteBooking(b.id)" class="text-red-600 hover:underline text-sm">
+              Cancel
+            </button>
+            <button *ngIf="b.status === 'complete'" class="text-green-600 hover:underline text-sm">
+              Pay
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Bookings Message -->
+    <div *ngIf="bookings.length === 0" class="text-gray-500 italic mt-4">
+      You have no bookings yet.
+    </div>
+  </div>
+</div>

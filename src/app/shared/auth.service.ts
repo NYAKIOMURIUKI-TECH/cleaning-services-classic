@@ -82,5 +82,4 @@ export class AuthService {
     } else {
       this.router.navigate(['/client']);
     }
-  }
-}
+  }}
