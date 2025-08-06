@@ -17,8 +17,6 @@ export class Login {
   constructor(private auth: AuthService) {}
 
   login() {
-    if (!this.auth.login(this.email, this.password)) {
-      alert('Invalid credentials');
-    }
+    this.auth.login(this.email, this.password).subscribe();  // ✅ FIXED: now triggers HTTP call
   }
 }
