@@ -1,12 +1,10 @@
 <router-outlet></router-outlet>
-<button 
-  class="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-  (click)="toggleDarkMode()">
-  ✨
-</button>
-
-<!-- <script>
-  function toggleDarkMode() {
-    document.documentElement.classList.toggle('dark');
-  }
-</script> -->
+<div class="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-colors">
+  <!-- The Toggle Button -->
+  <button 
+    class="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+    (click)="toggleDarkMode()">
+    ✨
+  </button>
+  
+</div>

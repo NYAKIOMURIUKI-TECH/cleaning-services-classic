@@ -8,8 +8,11 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('cleaning-services-classic');
+  //protected readonly title = signal('cleaning-services-classic');
+  
+  //const getDarkMode = () => localStorage.getItem("theme") === "dark";
   toggleDarkMode() {
+    console.log('toggling dark mode');
     document.documentElement.classList.toggle('dark');
   }
 }
