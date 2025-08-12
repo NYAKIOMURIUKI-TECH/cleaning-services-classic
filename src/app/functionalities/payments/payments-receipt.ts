@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-payments-receipt',
   templateUrl: './payments-receipt.html',
-  styleUrls: ['./payments-receipt.scss']
+  //styleUrls: ['./payments-receipt.scss']
 })
 export class PaymentsReceiptComponent implements OnInit {
     userEmail: string | null = null;

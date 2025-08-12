@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router';
   selector: 'app-customer',
   imports: [FormsModule, CommonModule, HttpClientModule, RouterModule],
   templateUrl: './customer.html',
-  styleUrl: './customer.scss'
+  //styleUrl: './customer.scss'
 })
 export class Customer implements OnInit {
   services: any[] = [];
