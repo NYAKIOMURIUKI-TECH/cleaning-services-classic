@@ -15,7 +15,7 @@ export class AuthService {
       email,
       password,
       role: email.includes('admin') ? 'admin' :
-            email.includes('cleaner') ? 'cleaner' : 'customer'
+            email.includes('cleaner') ? 'cleaner' : 'client'
     };
 
     this.currentUser = user;
@@ -44,6 +44,6 @@ export class AuthService {
   private redirectUser(role: Role) {
     if (role === 'admin') this.router.navigate(['/admin']);
     else if (role === 'cleaner') this.router.navigate(['/cleaner']);
-    else this.router.navigate(['/customer']);
+    else this.router.navigate(['/client']);
   }
 }
