@@ -3,7 +3,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
 import { Register } from './auth/register/register';
-import { Customer } from './dashboard/customer/customer';
 import { Client } from './dashboard/client/client';
 import { Cleaner } from './dashboard/cleaner/cleaner';
 import { Admin } from './dashboard/admin/admin';  
@@ -21,7 +20,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: 'client', component: Customer },
+  { path: 'client', component: Client },
   {path: 'cleaner', component: Cleaner },
   {path: 'admin', component: Admin },
   { path: 'customer/bookings', component: Booking },
@@ -32,13 +31,13 @@ export const routes: Routes = [
   {path: 'cleaner/bookings', component: Bookings },
   {path: 'cleaner/ratings', component: Ratings },
   
- // {path:'customer/payments/confirmPayment',component:PaymentReceipt}
+ // {path:'client/payments/confirmPayment',component:PaymentReceipt}
 
 
   //   {
-  //     path: 'customer',
+  //     path: 'client',
   //     loadChildren: () =>
-  //       import('./dashboard/customer/customer.routes').then((m) => m.CUSTOMER_ROUTES),
+  //       import('./dashboard/client/client.routes').then((m) => m.CLIENT_ROUTES),
   //   },
   //   {
 //     path: 'admin',
