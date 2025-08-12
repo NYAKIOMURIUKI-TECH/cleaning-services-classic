@@ -1,1 +1,97 @@
-<p>rating works!</p>
+<div class="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
+  <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">
+    Rate Your Service Experience
+  </h2>
+
+  <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <!-- Cleaner Name -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+        Cleaner Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        formControlName="cleanerName"
+        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+        placeholder="e.g. Jane Doe"
+      />
+      <p *ngIf="submitted && ratingForm.controls['cleanerName'].errors" class="text-red-500 text-sm mt-1">
+        This field is required.
+      </p>
+    </div>
+
+    <!-- Customer Name -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+        Your Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        formControlName="customerName"
+        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+        placeholder="e.g. John Smith"
+      />
+      <p *ngIf="submitted && ratingForm.controls['customerName'].errors" class="text-red-500 text-sm mt-1">
+        This field is required.
+      </p>
+    </div>
+
+    <!-- Rating -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+        How would you rate the service? <span class="text-red-500">*</span>
+      </label>
+      <select
+        formControlName="rating"
+        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+      >
+        <option value="">Select a rating</option>
+        <option value="1">1 - Completely Dissatisfied</option>
+        <option value="2">2 - Dissatisfied</option>
+        <option value="3">3 - Neutral</option>
+        <option value="4">4 - Satisfied</option>
+        <option value="5">5 - Completely Satisfied</option>
+      </select>
+      <p *ngIf="submitted && ratingForm.controls['rating'].errors" class="text-red-500 text-sm mt-1">
+        This field is required.
+      </p>
+    </div>
+
+    <!-- Recommend -->
+    <div class="flex items-center">
+      <input
+        type="checkbox"
+        id="wouldRecommend"
+        formControlName="wouldRecommend"
+        class="mr-2 accent-blue-600"
+      />
+      <label for="wouldRecommend" class="text-sm text-gray-700 dark:text-gray-200">
+        Would you book with us again?
+      </label>
+    </div>
+
+    <!-- Testimonial -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+        Additional comments / testimonial
+      </label>
+      <textarea
+        formControlName="testimonial"
+        rows="4"
+        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+        placeholder="Share your experience..."
+      ></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="text-center">
+      <button
+        type="submit"
+        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+      >
+        Submit Rating
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,1 +1,26 @@
-<p>settings works!</p>
+<form [formGroup]="settingsForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="p-4 space-y-4">
+  <div>
+    <label for="profilePicture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+    <input type="file" id="profilePicture" (change)="onFileChange($event)" class="mt-1" />
+    <div *ngIf="previewUrl">
+      <img [src]="previewUrl" alt="Preview" width="120" height="120" class="rounded-full mt-2 border" />
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Name</label>
+    <input formControlName="name" type="text" class="mt-1 border p-2 w-full rounded" />
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Email</label>
+    <input formControlName="email" type="email" class="mt-1 border p-2 w-full rounded" />
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Location</label>
+    <input formControlName="location" type="text" class="mt-1 border p-2 w-full rounded" />
+  </div>
+
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update Profile</button>
+</form>
