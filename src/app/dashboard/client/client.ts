@@ -14,23 +14,21 @@ import { RouterModule } from '@angular/router';
 export class Client implements OnInit {
   services: any[] = [];
   myBookings: any[] = [];
-  bookingForm = {
+  bookingForm= {
     serviceId: '',
     date: '',
     time: '',
-    location: '',
-    note: ''
+    location:'',
+    note:''
   };
   clientId: number = 1; // Example client ID, replace with actual logic
-  
   constructor(private clientService: ClientService, private routerModule: RouterModule) {}
-  
   ngOnInit(): void {
-    this.clientService.getServices().subscribe(data => this.services = data);
-    this.clientService.getMyBookings(this.clientId).subscribe(data => this.myBookings = data);
+      this.clientService.getServices().subscribe(data =>this.services = data);
+      this.clientService.getMyBookings(this.clientId).subscribe(data => this.myBookings = data);
   }
 
-  bookService() {
+bookService() {
     const bookingData = {
       clientId: this.clientId,
       ...this.bookingForm
@@ -45,8 +43,8 @@ export class Client implements OnInit {
     });
   }
 
-  // logout() {
-  //   localStorage.removeItem('token'); // if you're using token auth
-  //   this.routerModule.navigate(['/login']);
-  // }
+//   logout() {
+//   localStorage.removeItem('token'); // if you're using token auth
+//   this.routerModule.navigate(['/login']);
+// }
 }
