@@ -1,11 +1,11 @@
-// src/app/services/customer.service.ts
+// src/app/services/client.service.ts
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class CustomerService {
-  private apiUrl = 'http://localhost:3000/api'; // Change as needed
+export class ClientService {
+  private apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
@@ -17,7 +17,7 @@ export class CustomerService {
     return this.http.post(`${this.apiUrl}/bookings`, data);
   }
 
-  getMyBookings(customerId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/bookings/customer/${customerId}`);
+  getMyBookings(clientId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/bookings/client/${clientId}`);
   }
 }
