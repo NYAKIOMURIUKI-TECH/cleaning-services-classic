@@ -1,1 +1,55 @@
-<p>admin works!</p>
+<div class="p-6 text-white bg-gray-800">
+  <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="bg-blue-200 p-4 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-2">Total Earnings</h2>
+      <p class="text-3xl font-bold text-blue-600">KSh {{ totalEarnings | number }}</p>
+    </div>
+
+    <div class="bg-blue-200 p-4 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-2">Total Bookings</h2>
+      <p class="text-3xl font-bold text-blue-600">{{ totalBooking | number }}</p>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <canvas #earningsChart></canvas>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow">
+      <canvas #bookingsChart></canvas>
+    </div>
+  </section>
+
+  <!-- Service Management -->
+  <section class="mb-8 text-center">
+    <h2 class="text-xl font-semibold mb-4">Manage Services</h2>
+    <div class="space-x-2 mb-4">
+      <button (click)="addService()" class="px-4 py-2 bg-blue-500 text-white rounded">Add Service</button>
+      <button (click)="updateService()" class="px-4 py-2 bg-blue-500 text-white rounded">Update Service</button>
+      <button (click)="deleteService()" class="px-4 py-2 bg-blue-500 text-white rounded">Delete Service</button>
+    </div>
+    <!-- You can add a table here later to show services -->
+     <h3 class="text-xl font-bold mb-2 text-left">Search Services</h3>
+      <input [(ngModel)]="serviceSearch" placeholder="Search service by name"
+        class="border rounded p-2 w-full mb-2" />
+      <button (click)="searchServices()" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+      <button (click)="viewAllServices()" class="bg-gray-500 text-white px-4 py-2 rounded ml-2">View All Services</button>
+  </section>
+
+  <!-- User Management -->
+  <section class="mb-8 text-center">
+    <h2 class="text-xl font-semibold mb-4">Manage Users</h2>
+    <!-- Add user table here later -->
+    <h3 class="text-xl font-bold mb-2 text-left">Search Users</h3>
+      <input [(ngModel)]="userSearch" placeholder="Search user by name or email"
+        class="border rounded p-2 w-full mb-2" />
+      <button (click)="searchUser()" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
+      <button (click)="viewAllUsers()" class="bg-gray-500 text-white px-4 py-2 rounded ml-2">View All Users</button>
+        <button (click)="deleteUser()" class="px-4 py-2 bg-blue-500 text-white rounded ml-2">Delete User</button>
+
+    </section>
+</div>
