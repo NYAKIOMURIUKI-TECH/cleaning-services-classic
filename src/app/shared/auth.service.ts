@@ -12,6 +12,7 @@ export interface User {
   email: string;
   password: string;
   role: Role;
+  photoUrl?: string; // Optional, for cleaner profile
 }
 
 @Injectable({
