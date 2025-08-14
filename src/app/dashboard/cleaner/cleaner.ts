@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService, Role } from '../../shared/auth.service';
+import { Router } from '@angular/router';
 
 type Section = 'dashboard' | 'bookings' | 'payments' | 'settings' | 'ratings';
 
@@ -39,13 +41,14 @@ interface Rating {
   styleUrl: './cleaner.scss'
 })
 export class Cleaner implements OnInit {
+constructor(private auth: AuthService, private router: Router) {}
    // UI state
   activeSection: Section = 'dashboard';
 
   // Profile (editable in Settings)
-  profile = {
-    name: 'Alex Mwangi',
-    email: 'alex.cleaner@example.com',
+   profile = {
+    name: '',
+    email: '',
     photoUrl: '' as string | ArrayBuffer | null
   };
 
@@ -85,7 +88,17 @@ export class Cleaner implements OnInit {
   recentActivity: string[] = [];
 
   ngOnInit(): void {
-    this.log('Signed in as cleaner.');
+    const user = this.auth.getUser(); // Adjust based on your AuthService
+    if (!user) {
+      this.router.navigate(['/login']); // Redirect if not logged in
+      return;
+    }
+
+    this.profile.name = user.fullName  || '';
+    this.profile.email = user.email || '';
+    this.profile.photoUrl = user.photoUrl || '';
+
+    this.log(`Signed in as cleaner: ${this.profile.name}`);
   }
 
   // Section navigation
