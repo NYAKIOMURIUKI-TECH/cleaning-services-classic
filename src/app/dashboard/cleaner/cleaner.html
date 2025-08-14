@@ -1,1 +1,192 @@
-<p>cleaner works!</p>
+<div class="min-h-screen bg-[#0f172a] text-gray-100 flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-[#111827] border-r border-gray-800 p-4 space-y-4 sticky top-0 h-screen">
+    <div class="text-center mb-4">
+      <div class="w-20 h-20 mx-auto rounded-full bg-gray-700 overflow-hidden">
+        <img *ngIf="profile.photoUrl" [src]="profile.photoUrl" alt="Profile" class="w-full h-full object-cover" />
+        <div *ngIf="!profile.photoUrl" class="w-full h-full flex items-center justify-center text-gray-300 text-sm">No Photo</div>
+      </div>
+      <div class="mt-3 font-semibold">{{ profile.name }}</div>
+      <div class="text-xs text-gray-400">{{ profile.email }}</div>
+    </div>
+
+    <nav class="space-y-2">
+      <button (click)="go('dashboard')"
+              [class]="activeSection === 'dashboard' ? 'w-full text-left px-3 py-2 rounded bg-blue-600' : 'w-full text-left px-3 py-2 rounded hover:bg-gray-800'">
+        Dashboard
+      </button>
+      <button (click)="go('bookings')"
+              [class]="activeSection === 'bookings' ? 'w-full text-left px-3 py-2 rounded bg-blue-600' : 'w-full text-left px-3 py-2 rounded hover:bg-gray-800'">
+        Bookings
+      </button>
+      <button (click)="go('payments')"
+              [class]="activeSection === 'payments' ? 'w-full text-left px-3 py-2 rounded bg-blue-600' : 'w-full text-left px-3 py-2 rounded hover:bg-gray-800'">
+        Payments
+      </button>
+      <button (click)="go('ratings')"
+              [class]="activeSection === 'ratings' ? 'w-full text-left px-3 py-2 rounded bg-blue-600' : 'w-full text-left px-3 py-2 rounded hover:bg-gray-800'">
+        Ratings
+      </button>
+      <button (click)="go('settings')"
+              [class]="activeSection === 'settings' ? 'w-full text-left px-3 py-2 rounded bg-blue-600' : 'w-full text-left px-3 py-2 rounded hover:bg-gray-800'">
+        Settings
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1">
+    <!-- Top bar -->
+    <header class="bg-blue-500 text-white px-6 py-3 sticky top-0 z-10">
+      <h1 class="text-lg font-bold">Welcome to CleanServicePro</h1>
+    </header>
+
+    <div class="p-6 space-y-8">
+      <!-- DASHBOARD -->
+      <section *ngIf="activeSection === 'dashboard'" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div class="bg-[#0b1220] border border-gray-800 rounded-lg p-4">
+            <div class="text-gray-400 text-sm">Average Rating</div>
+            <div class="text-3xl font-bold mt-1">{{ averageRating }}/5</div>
+          </div>
+
+          <div class="bg-[#0b1220] border border-gray-800 rounded-lg p-4">
+            <div class="text-gray-400 text-sm">Pending Service</div>
+            <div class="mt-1" *ngIf="pendingService; else nonePending">
+              <div class="font-semibold">{{ pendingService.service }}</div>
+              <div class="text-sm text-gray-400">{{ pendingService.date }} • {{ pendingService.time }}</div>
+            </div>
+            <ng-template #nonePending>
+              <div class="text-gray-400">No pending services</div>
+            </ng-template>
+          </div>
+
+          <div class="bg-[#0b1220] border border-gray-800 rounded-lg p-4">
+            <div class="text-gray-400 text-sm">Total Earnings</div>
+            <div class="text-3xl font-bold text-green-400 mt-1">KSh {{ totalEarnings | number }}</div>
+          </div>
+
+          <div class="bg-[#0b1220] border border-gray-800 rounded-lg p-4">
+            <div class="text-gray-400 text-sm">Recent Activity</div>
+            <ul class="mt-2 space-y-1 text-sm max-h-28 overflow-auto pr-1">
+              <li *ngFor="let a of recentActivity">{{ a }}</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOOKINGS -->
+      <section *ngIf="activeSection === 'bookings'" class="space-y-4">
+        <h2 class="text-xl font-semibold">Bookings</h2>
+        <div class="grid gap-4">
+          <div *ngFor="let b of bookings"
+               class="bg-[#0b1220] border border-gray-800 rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+              <div class="font-semibold">{{ b.service }} — {{ b.customerName }}</div>
+              <div class="text-sm text-gray-400">{{ b.address }}</div>
+              <div class="text-sm text-gray-400">{{ b.date }} • {{ b.time }}</div>
+              <div class="text-sm mt-1">
+                <span class="px-2 py-0.5 rounded text-xs"
+                      [ngClass]="{
+                        'bg-yellow-900 text-yellow-300': b.status==='pending',
+                        'bg-green-900 text-green-300': b.status==='completed',
+                        'bg-gray-700 text-gray-300': b.status==='new',
+                        'bg-red-900 text-red-300': b.status==='declined'
+                      }">
+                  {{ b.status | titlecase }}
+                </span>
+                <span *ngIf="b.assignedTo" class="text-gray-400 ml-2 text-xs">Assigned: {{ b.assignedTo }}</span>
+              </div>
+            </div>
+
+            <div class="mt-3 md:mt-0 flex items-center gap-2">
+              <button *ngIf="b.status==='new'" (click)="acceptBooking(b.id)"
+                      class="px-3 py-1 rounded bg-blue-600 hover:bg-blue-500">Accept</button>
+              <button *ngIf="b.status==='new' || b.status==='pending'" (click)="declineBooking(b.id)"
+                      class="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600">Decline</button>
+              <button *ngIf="b.status==='pending' && b.assignedTo==='You'" (click)="completeBooking(b.id)"
+                      class="px-3 py-1 rounded bg-green-600 hover:bg-green-500">Mark Completed</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAYMENTS -->
+      <section *ngIf="activeSection === 'payments'" class="space-y-4">
+        <h2 class="text-xl font-semibold">Payments</h2>
+        <div class="overflow-auto rounded-lg border border-gray-800">
+          <table class="min-w-full text-sm">
+            <thead class="bg-[#0b1220] text-gray-300">
+              <tr>
+                <th class="text-left px-4 py-2">ID</th>
+                <th class="text-left px-4 py-2">Date</th>
+                <th class="text-left px-4 py-2">Amount</th>
+                <th class="text-left px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of payments" class="border-t border-gray-800">
+                <td class="px-4 py-2">{{ p.id }}</td>
+                <td class="px-4 py-2">{{ p.date }}</td>
+                <td class="px-4 py-2">KSh {{ p.amount | number }}</td>
+                <td class="px-4 py-2">
+                  <span class="px-2 py-0.5 rounded text-xs"
+                        [ngClass]="{
+                          'bg-green-900 text-green-300': p.status==='paid',
+                          'bg-yellow-900 text-yellow-300': p.status==='processing'
+                        }">
+                    {{ p.status | titlecase }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- RATINGS -->
+      <section *ngIf="activeSection === 'ratings'" class="space-y-4">
+        <h2 class="text-xl font-semibold">Ratings (Avg: {{ averageRating }}/5)</h2>
+        <div class="grid gap-4">
+          <div *ngFor="let r of ratings" class="bg-[#0b1220] border border-gray-800 rounded-lg p-4">
+            <div class="font-semibold">
+              <span class="text-yellow-400">{{ '★'.repeat(r.stars) }}</span>
+              <span class="text-gray-600">{{ '★'.repeat(5 - r.stars) }}</span>
+            </div>
+            <div class="text-sm text-gray-300 mt-1">{{ r.comment }}</div>
+            <div class="text-xs text-gray-500 mt-1">{{ r.date }}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section *ngIf="activeSection === 'settings'" class="space-y-6">
+        <h2 class="text-xl font-semibold">Settings</h2>
+
+        <div class="bg-[#0b1220] border border-gray-800 rounded-lg p-4">
+          <label class="block text-sm mb-1">Profile Photo</label>
+          <div class="flex items-center gap-4">
+            <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-700">
+              <img *ngIf="profile.photoUrl" [src]="profile.photoUrl" alt="Profile" class="w-full h-full object-cover">
+              <div *ngIf="!profile.photoUrl" class="w-full h-full flex items-center justify-center text-gray-300 text-xs">No Photo</div>
+            </div>
+            <input type="file" accept="image/*" (change)="onPhotoSelected($event)" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500">
+          <input>
+          </div>
+        </div>
+
+        <div class="bg-[#0b1220] border border-gray-800 rounded-lg p-4 space-y-3">
+          <div>
+            <label class="block text-sm mb-1">Name</label>
+            <input [(ngModel)]="profile.name" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm mb-1">Email</label>
+            <input [(ngModel)]="profile.email" type="email" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 outline-none focus:border-blue-500">
+          </div>
+          <button (click)="updateProfile()" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-500">Save Changes</button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
