@@ -1,19 +1,18 @@
-import{Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../shared/auth.service';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common'; // needed for *ngIf
 
-// This component handles the payment receipt functionality
 @Component({
   selector: 'app-payments-receipt',
-  templateUrl: './payments-receipt.html',
-  //styleUrls: ['./payments-receipt.scss']
+  standalone: true,          // standalone component
+  imports: [CommonModule],   // import CommonModule for *ngIf
+  templateUrl: './payments-receipt.html', // keep external template
 })
 export class PaymentsReceiptComponent implements OnInit {
-    userEmail: string | null = null;
-    receiptSent: boolean = false;
+  userEmail: string | null = null;
+  receiptSent: boolean = false;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     const user = this.authService.getUser();
@@ -25,10 +24,8 @@ export class PaymentsReceiptComponent implements OnInit {
 
   sendReceipt() {
     if (this.userEmail) {
-      // Simulate sending a receipt
       console.log(`Payment receipt sent to: ${this.userEmail}`);
       this.receiptSent = true;
     }
   }
-
 }

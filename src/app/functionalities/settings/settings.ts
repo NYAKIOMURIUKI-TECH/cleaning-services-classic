@@ -1,51 +1,121 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import{SettingsService} from '../../services/settings.service';
-import { FormsModule,ReactiveFormsModule,FormBuilder, FormGroup} from '@angular/forms';
+import { SettingsService } from '../../services/settings.service';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 @Component({
   selector: 'app-settings',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './settings.html',
-  //styleUrls: ['./settings.scss']
 })
-export class Settings {
-settingsForm: FormGroup;
+export class Settings implements OnInit {
+  settingsForm: FormGroup;
   selectedImage: File | null = null;
   previewUrl: string | ArrayBuffer | null = null;
+  isLoading = false;
+  message = '';
+  userId: number = 0;
 
   constructor(private fb: FormBuilder, private settingsService: SettingsService) {
     this.settingsForm = this.fb.group({
-      name: [''],
-      email: [''],
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       location: [''],
-      profilePicture: [null],
+      profilePicture: ['']
+    });
+  }
+
+  ngOnInit() {
+    this.getUserId();
+    this.loadCurrentProfile();
+  }
+
+  getUserId() {
+    const storedUserId = localStorage.getItem('userId') || 
+                         localStorage.getItem('user_id') ||
+                         sessionStorage.getItem('userId') ||
+                         sessionStorage.getItem('user_id');
+
+    if (storedUserId) {
+      this.userId = parseInt(storedUserId);
+      console.log('Found user ID:', this.userId);
+    } else {
+      console.error('No user ID found. Cannot load profile.');
+      this.message = 'Please log in to access your profile settings.';
+    }
+  }
+
+  loadCurrentProfile() {
+    if (!this.userId) return;
+
+    this.settingsService.getCurrentProfile(this.userId).subscribe({
+      next: (response: any) => {
+        if (response.success && response.user) {
+          this.settingsForm.patchValue({
+            fullName: response.user.fullName || '',
+            email: response.user.email || '',
+            location: response.user.location || '',
+            profilePicture: response.user.profilePicture || ''
+          });
+
+          if (response.user.profilePicture) {
+            this.previewUrl = response.user.profilePicture;
+          }
+        }
+      },
+      error: (error: any) => {
+        console.error('Error loading profile:', error);
+        this.message = 'Failed to load profile data';
+      }
     });
   }
 
   onFileChange(event: any) {
     const file = event.target.files[0];
-    this.selectedImage = file;
-
-    // Show preview
-    const reader = new FileReader();
-    reader.onload = e => this.previewUrl = reader.result;
-    reader.readAsDataURL(file);
+    if (file) {
+      this.selectedImage = file;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+        this.settingsForm.patchValue({ profilePicture: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   onSubmit() {
-    const formData = new FormData();
-    formData.append('name', this.settingsForm.value.name);
-    formData.append('email', this.settingsForm.value.email);
-    formData.append('location', this.settingsForm.value.location);
-
-    if (this.selectedImage) {
-      formData.append('profilePicture', this.selectedImage);
+    if (this.settingsForm.invalid) {
+      this.message = 'Please fill in all required fields correctly';
+      return;
     }
 
-    this.settingsService.updateProfile(formData).subscribe({
-      next: res => alert('Profile updated successfully'),
-      error: err => console.error('Update failed', err)
+    if (!this.userId) return;
+
+    this.isLoading = true;
+    this.message = '';
+
+    const profileData = {
+      fullName: this.settingsForm.value.fullName,
+      email: this.settingsForm.value.email,
+      location: this.settingsForm.value.location,
+      profilePicture: this.settingsForm.value.profilePicture
+    };
+
+    this.settingsService.updateProfile(this.userId, profileData).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
+        if (response.success) {
+          this.message = 'Profile updated successfully!';
+          alert('Profile updated successfully!');
+        } else {
+          this.message = response.message || 'Failed to update profile';
+        }
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        console.error('Update failed:', error);
+        this.message = error.message || 'Failed to update profile';
+      }
     });
   }
 }
-
