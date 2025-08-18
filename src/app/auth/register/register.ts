@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../shared/auth.service';
 import { Role } from '../../shared/models/user.model';
 
@@ -12,14 +12,21 @@ import { Role } from '../../shared/models/user.model';
   styleUrls: ['./register.scss']
 })
 export class Register {
-  fullName = ''; // ✅ Add fullName
+  fullName = '';
   email = '';
   password = '';
   role: Role = 'client';
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private router: Router) {}
 
   register() {
-    this.auth.register(this.fullName, this.email, this.password, this.role).subscribe();
+    this.auth.register(this.fullName, this.email, this.password, this.role)
+      .subscribe({
+        next: () => {
+          alert('Registration successful! Please login.');
+          this.router.navigate(['/login']); // ✅ redirect to login
+        },
+        error: (err) => console.error(err)
+      });
   }
 }

@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
-// Make sure this interface and Role type are available or imported
 export type Role = 'client' | 'cleaner' | 'admin';
 
 export interface User {
+  id?: number; // Optional for cleaner profile
   fullName?: string;
   email: string;
   password: string;
@@ -31,15 +31,14 @@ export class AuthService {
       tap((res: any) => {
         const user: User = res.user;
         this.currentUser = user;
-        localStorage.setItem('user', JSON.stringify(user));
 
-        if (user.role === 'admin') {
-          this.router.navigate(['/admin']);
-        } else if (user.role === 'client') {
-          this.router.navigate(['/client']);
-        } else if (user.role === 'cleaner') {
-          this.router.navigate(['/cleaner']);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(user));
         }
+
+        // After login, always redirect to login page first if needed
+        // Or navigate to dashboard
+        this.redirectUser(user.role);
       }),
       catchError(err => {
         alert(err.error.message || 'Login failed');
@@ -55,8 +54,16 @@ export class AuthService {
       tap((res: any) => {
         const user: User = res.user;
         this.currentUser = user;
-        localStorage.setItem('user', JSON.stringify(user));
-        this.redirectUser(user.role);
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+
+        // After registration, redirect to login page instead of dashboard
+        if (typeof window !== 'undefined') {
+          alert('Registration successful! Please log in.');
+        }
+        this.router.navigate(['/login']);
       }),
       catchError(err => {
         alert(err.error.message || 'Registration failed');
@@ -66,12 +73,17 @@ export class AuthService {
   }
 
   getUser(): User | null {
-    return this.currentUser ?? JSON.parse(localStorage.getItem('user')!);
+    if (typeof window !== 'undefined') {
+      return this.currentUser ?? JSON.parse(localStorage.getItem('user')!);
+    }
+    return this.currentUser ?? null;
   }
 
   logout() {
     this.currentUser = null;
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+    }
     this.router.navigate(['/login']);
   }
 
@@ -83,4 +95,5 @@ export class AuthService {
     } else {
       this.router.navigate(['/client']);
     }
-  }}
+  }
+}
