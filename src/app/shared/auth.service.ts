@@ -7,6 +7,7 @@ import { catchError, tap } from 'rxjs/operators';
 export type Role = 'client' | 'cleaner' | 'admin';
 
 export interface User {
+  id?: number; // Optional for cleaner profile
   fullName?: string;
   email: string;
   password: string;
