@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SettingsService } from '../../services/settings.service';
+import { SettingsService } from '../../shared/services/settings.service';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -31,7 +31,7 @@ export class Settings implements OnInit {
   }
 
   getUserId() {
-    const storedUserId = localStorage.getItem('userId') || 
+    const storedUserId = localStorage.getItem('userId') ||
                          localStorage.getItem('user_id') ||
                          sessionStorage.getItem('userId') ||
                          sessionStorage.getItem('user_id');

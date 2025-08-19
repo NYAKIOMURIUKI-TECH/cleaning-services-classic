@@ -1,107 +1,89 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
-
+import { Router } from '@angular/router';
+import { AuthService } from '../../shared/services/auth.service';
+import { JobService } from '../../shared/services/job.service';
+import { User } from '../../shared/models/user.model';
+import { JobRequest } from '../../shared/models/job.model';
 
 @Component({
   selector: 'app-booking',
-  imports: [CommonModule, RouterModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './booking.html',
-  styleUrl: './booking.scss'
+  styleUrls: ['./booking.scss']
 })
 export class Booking implements OnInit {
-  constructor(private http: HttpClient) {}
-  services = ['Cleaning', 'Laundry', 'Plumbing','Carpet Cleaning','Window Cleaning']; // Can be dynamic
-  bookings: any[] = []; // This will be fetched from backend in real use
-  showForm = false;
+  user: User | null = null;
 
-  booking = {
-    service: '',
-    date: '',
-    time: ''
-  };
+  // Form fields
+  jobTitle = '';
+  jobDescription = '';
+  address = '';
+  price: number = 0;
+  durationHours: number = 1;
+  date = '';
+  time = '';
+
+  isSubmitting = false;
+  minDate = '';
+
+  constructor(
+    private auth: AuthService,
+    private jobService: JobService,
+    private router: Router
+  ) {}
+
   ngOnInit() {
-    this.loadBookings();
+    this.user = this.auth.getUser();
+    if (!this.user) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // Set minimum date to today
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
   }
 
-  // ADD THIS METHOD  
-  loadBookings() {
-    this.http.get('http://localhost:8080/api/bookings')
-      .subscribe({
-        next: (data: any) => {
-          this.bookings = data;
-        },
-        error: (err) => console.error('Failed to load bookings', err)
-      });
-  }
+  createJob() {
+    if (this.isSubmitting) return;
 
-  toggleBookingForm() {
-    this.showForm = !this.showForm;
-  }
+    if (!this.user?.id) {
+      alert('User not found. Please login again.');
+      return;
+    }
 
-  confirmBooking() {
-  console.log('Form booking data before send:', this.booking);
+    this.isSubmitting = true;
 
-  const selectedDateTime = new Date(`${this.booking.date}T${this.booking.time}`);
-  const currentDateTime = new Date();
+    const jobData: JobRequest = {
+      job_title: this.jobTitle,
+      job_description: this.jobDescription,
+      address: this.address,
+      price: this.price,
+      duration_hours: this.durationHours,
+      date: this.date,
+      time: this.time,
+      client_id: this.user.id
+    };
 
-  if (selectedDateTime < currentDateTime) {
-    alert('Oooops! Past event. Please choose a future date and time.');
-    return;
-  }
-
-  const confirm = window.confirm('Are you sure? You won’t be able to edit this after confirming.');
-  if (!confirm) return;
-
-  this.http.post('http://localhost:8080/api/bookings', this.booking)
-    .subscribe({
-      next: (res: any) => {
-        console.log('Backend response:', res);
-
-        // If backend sends only { bookingId }, create the row from form data
-        const newBooking = res.booking
-          ? res.booking
-          : {
-              id: res.bookingId,           // from backend
-              service: this.booking.service,
-              date: this.booking.date,
-              time: this.booking.time,
-              status: 'pending'            // default for display
-            };
-
-        this.bookings.push(newBooking);
-        alert(res.message || 'Booking created');
-        this.booking = { service: '', date: '', time: '' };
-        this.showForm = false;
+    this.jobService.createJob(jobData).subscribe({
+      next: (response: any) => {
+        alert('Job created successfully!');
+        this.router.navigate(['/client']);
       },
-      error: (err) => {
-        console.error('Error occurred:', err);
-        alert('Failed to create booking. Please try again.');
+      error: (err: any) => {
+        console.error('Error creating job:', err);
+        alert(err.error?.message || 'Failed to create job. Please try again.');
+      },
+      complete: () => {
+        this.isSubmitting = false;
       }
     });
-}
-
-  deleteBooking(id: number) {
-  const confirm = window.confirm('Are you sure you want to cancel this booking?');
-  if (confirm) {
-    // Call backend API to delete from MySQL
-    this.http.delete(`http://localhost:8080/api/bookings/${id}`)
-      .subscribe({
-        next: (res: any) => {
-          // Only remove from frontend array AFTER backend confirms deletion
-          this.bookings = this.bookings.filter(b => b.id !== id);
-          alert('Booking cancelled successfully');
-        },
-        error: (err) => {
-          console.error('Delete error:', err);
-          alert('Failed to cancel booking');
-        }
-      });
   }
-}
-  viewBooking(booking: any) {
-    alert(`Booking Details:\nService: ${booking.service}\nDate: ${booking.date}\nTime: ${booking.time}`);
+
+  goBack() {
+    this.router.navigate(['/client']);
   }
 }

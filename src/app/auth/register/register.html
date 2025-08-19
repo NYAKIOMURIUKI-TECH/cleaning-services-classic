@@ -46,14 +46,43 @@
         />
       </div>
 
+      <!-- Phone -->
+      <div class="mb-4">
+        <label for="phone" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          [(ngModel)]="phone"
+          name="phone"
+          placeholder="+254700000000"
+          required
+          class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Location -->
+      <div class="mb-4">
+        <label for="location" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Location</label>
+        <input
+          type="text"
+          id="location"
+          [(ngModel)]="location"
+          name="location"
+          placeholder="Nairobi"
+          required
+          class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
       <!-- Role -->
-      <div class="mb-6">
+      <div class="mb-4">
         <label for="role" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Role</label>
         <select
           id="role"
           [(ngModel)]="role"
           name="role"
           required
+          (change)="onRoleChange()"
           class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="" disabled selected>Select role</option>
@@ -63,12 +92,60 @@
         </select>
       </div>
 
+      <!-- Cleaner-specific fields -->
+      <div *ngIf="role === 'cleaner'">
+        <!-- Bio -->
+        <div class="mb-4">
+          <label for="bio" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Bio</label>
+          <textarea
+            id="bio"
+            [(ngModel)]="bio"
+            name="bio"
+            placeholder="Professional cleaner with 5 years experience"
+            rows="2"
+            required
+            class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Skills -->
+        <div class="mb-4">
+          <label for="skills" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Skills</label>
+          <textarea
+            id="skills"
+            [(ngModel)]="skills"
+            name="skills"
+            placeholder="Deep cleaning, carpet cleaning, window cleaning"
+            rows="2"
+            required
+            class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Experience Years -->
+        <div class="mb-4">
+          <label for="experienceYears" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Years of Experience</label>
+          <input
+            type="number"
+            id="experienceYears"
+            [(ngModel)]="experienceYears"
+            name="experienceYears"
+            placeholder="5"
+            min="0"
+            max="50"
+            required
+            class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
       <!-- Register Button -->
       <button
         type="submit"
-        class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all duration-300 font-semibold"
+        [disabled]="isSubmitting"
+        class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Register
+        {{ isSubmitting ? 'Creating Account...' : 'Register' }}
       </button>
 
       <!-- Link to Login -->

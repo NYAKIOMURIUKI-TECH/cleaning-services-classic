@@ -1,63 +1,259 @@
-<div class="p-6 text-white bg-gray-800">
-    <!-- Top Bar -->
-  <header class="flex items-center justify-between px-6 py-1 bg-blue-400 text-white shadow">
-    <div class="flex items-center space-x-3">
-      <img src="assets/profile-placeholder.PNG" alt="Profile" class="w-9 h-10 rounded-rectangle-full border-2 border-white" />
+<div class="min-h-screen bg-white dark:bg-gray-900 transition-colors">
+  <!-- Header -->
+  <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400">System Overview</p>
+        </div>
+        <button
+          (click)="logout()"
+          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+        >
+          Logout
+        </button>
+      </div>
     </div>
-    <h1 class="text-xl font-bold tracking-wide">Welcome to CleanServicePro</h1>
-    <div class="w-10"></div>
   </header>
-  <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
 
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-blue-200 p-4 rounded-lg shadow">
-      <h2 class="text-lg font-semibold mb-2">Total Earnings</h2>
-      <p class="text-3xl font-bold text-blue-600">KSh {{ totalEarnings | number }}</p>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="text-gray-600 dark:text-gray-400 mt-4">Loading dashboard...</p>
     </div>
 
-    <div class="bg-blue-200 p-4 rounded-lg shadow">
-      <h2 class="text-lg font-semibold mb-2">Total Bookings</h2>
-      <p class="text-3xl font-bold text-blue-600">{{ totalBooking | number }}</p>
+    <div *ngIf="!isLoading">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Jobs</p>
+              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats?.totalJobs || 0 }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+              <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats?.pendingJobs || 0 }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">In Progress</p>
+              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats?.inProgressJobs || 0 }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Completed</p>
+              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ stats?.completedJobs || 0 }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+              <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
+              <p class="text-2xl font-semibold text-gray-900 dark:text-white">KSH {{ stats?.totalRevenue || 0 }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Overview -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Job Status Overview -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Job Status Overview</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Pending Jobs</span>
+              <span class="text-lg font-medium text-yellow-600 dark:text-yellow-400">{{ stats?.pendingJobs || 0 }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">In Progress</span>
+              <span class="text-lg font-medium text-blue-600 dark:text-blue-400">{{ stats?.inProgressJobs || 0 }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Completed</span>
+              <span class="text-lg font-medium text-green-600 dark:text-green-400">{{ stats?.completedJobs || 0 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Overview -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Revenue Overview</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Total Revenue</span>
+              <span class="text-xl font-semibold text-gray-900 dark:text-white">KSH {{ stats?.totalRevenue || 0 }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Completed Jobs</span>
+              <span class="text-lg font-medium text-green-600 dark:text-green-400">{{ stats?.completedJobs || 0 }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400">Average Job Value</span>
+              <span class="text-lg font-medium text-blue-600 dark:text-blue-400">
+                <ng-container *ngIf="stats && stats.completedJobs && stats.totalRevenue; else zeroAverage">
+                  KSH {{ (stats.totalRevenue / stats.completedJobs).toFixed(0) }}
+                </ng-container>
+                <ng-template #zeroAverage>KSH 0</ng-template>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Management Actions -->
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Management Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button
+            (click)="viewUsers()"
+            class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-all duration-300 text-left"
+          >
+            <div class="flex items-center mb-2">
+              <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg mr-3">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+              </div>
+              <h3 class="font-semibold text-gray-900 dark:text-white">Manage Users</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">View and manage all users</p>
+          </button>
+
+          <button
+            (click)="viewBookings()"
+            class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-all duration-300 text-left"
+          >
+            <div class="flex items-center mb-2">
+              <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg mr-3">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h3 class="font-semibold text-gray-900 dark:text-white">All Jobs</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Monitor all job bookings</p>
+          </button>
+
+          <button
+            (click)="viewPayments()"
+            class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-all duration-300 text-left"
+          >
+            <div class="flex items-center mb-2">
+              <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg mr-3">
+                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+              </div>
+              <h3 class="font-semibold text-gray-900 dark:text-white">Payments</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Monitor payment transactions</p>
+          </button>
+
+          <button
+            (click)="viewReports()"
+            class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-all duration-300 text-left"
+          >
+            <div class="flex items-center mb-2">
+              <div class="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg mr-3">
+                <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <h3 class="font-semibold text-gray-900 dark:text-white">Reports</h3>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Generate system reports</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent System Activity -->
+      <div>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Recent Jobs</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div class="p-6" *ngIf="recentJobs.length > 0">
+            <div class="space-y-4">
+              <div
+                *ngFor="let job of recentJobs"
+                class="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+              >
+                <div class="flex items-center">
+                  <div class="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg mr-4">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-gray-900 dark:text-white">{{ job.job_title }}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      {{ job.client_name }}
+                      <span *ngIf="job.cleaner_name"> • {{ job.cleaner_name }}</span>
+                      • {{ formatDate(job.date) }}
+                    </p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-sm font-semibold text-green-600 dark:text-green-400">KSH {{ job.price }}</p>
+                  <span
+                    class="inline-block mt-1 px-2 py-1 text-xs rounded-full"
+                    [class]="getStatusClass(job.status)"
+                  >
+                    {{ job.status }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-6 text-center" *ngIf="recentJobs.length === 0">
+            <p class="text-gray-600 dark:text-gray-400">No jobs found</p>
+          </div>
+        </div>
+      </div>
     </div>
+
   </div>
-
-  <!-- Charts Section -->
-  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-    <div class="bg-white p-4 rounded-lg shadow">
-      <canvas #earningsChart></canvas>
-    </div>
-    <div class="bg-white p-4 rounded-lg shadow">
-      <canvas #bookingsChart></canvas>
-    </div>
-  </section>
-
-  <!-- Service Management -->
-  <section class="mb-8 text-center">
-    <h2 class="text-xl font-semibold mb-4">Manage Services</h2>
-    <div class="space-x-2 mb-4">
-      <button (click)="addService()" class="px-4 py-2 bg-blue-500 text-white rounded">Add Service</button>
-      <button (click)="updateService()" class="px-4 py-2 bg-blue-500 text-white rounded">Update Service</button>
-      <button (click)="deleteService()" class="px-4 py-2 bg-blue-500 text-white rounded">Delete Service</button>
-    </div>
-    <!-- You can add a table here later to show services -->
-     <h3 class="text-xl font-bold mb-2 text-left">Search Services</h3>
-      <input [(ngModel)]="serviceSearch" placeholder="Search service by name"
-        class="border rounded p-2 w-full mb-2" />
-      <button (click)="searchServices()" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
-      <button (click)="viewAllServices()" class="bg-gray-500 text-white px-4 py-2 rounded ml-2">View All Services</button>
-  </section>
-
-  <!-- User Management -->
-  <section class="mb-8 text-center">
-    <h2 class="text-xl font-semibold mb-4">Manage Users</h2>
-    <!-- Add user table here later -->
-    <h3 class="text-xl font-bold mb-2 text-left">Search Users</h3>
-      <input [(ngModel)]="userSearch" placeholder="Search user by name or email"
-        class="border rounded p-2 w-full mb-2" />
-      <button (click)="searchUser()" class="bg-blue-500 text-white px-4 py-2 rounded">Search</button>
-      <button (click)="viewAllUsers()" class="bg-gray-500 text-white px-4 py-2 rounded ml-2">View All Users</button>
-        <button (click)="deleteUser()" class="px-4 py-2 bg-blue-500 text-white rounded ml-2">Delete User</button>
-
-    </section>
 </div>

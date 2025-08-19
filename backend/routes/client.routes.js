@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/client.controller');
+const { authenticateToken } = require('../middleware/auth');
 
 // Middleware to log all requests to client routes
 router.use((req, res, next) => {
@@ -9,8 +10,13 @@ router.use((req, res, next) => {
   next();
 });
 
-// Routes for Angular settings page
-router.get('/profile', clientController.getUserProfile);              // GET /api/client/profile
-router.put('/profile', clientController.updateUserProfile);           // PUT /api/client/profile
+// Get user profile
+router.get('/profile/:id', clientController.getUserProfile);
+
+// Update user profile
+router.put('/profile/:id', authenticateToken, clientController.updateUserProfile);
+
+// Get client's bookings
+router.get('/bookings', authenticateToken, clientController.getClientBookings);
 
 module.exports = router;

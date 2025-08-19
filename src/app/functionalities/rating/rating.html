@@ -1,97 +1,145 @@
-<div class="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg">
-  <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">
-    Rate Your Service Experience
-  </h2>
+<div class="min-h-screen bg-white dark:bg-gray-900 transition-colors p-6">
+  <div class="max-w-4xl mx-auto">
 
-  <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()" class="space-y-6">
-    
-    <!-- Cleaner Name -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-        Cleaner Name <span class="text-red-500">*</span>
-      </label>
-      <input
-        type="text"
-        formControlName="cleanerName"
-        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-        placeholder="e.g. Jane Doe"
-      />
-      <p *ngIf="submitted && ratingForm.controls['cleanerName'].errors" class="text-red-500 text-sm mt-1">
-        This field is required.
-      </p>
-    </div>
-
-    <!-- Client Name -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-        Your Name <span class="text-red-500">*</span>
-      </label>
-      <input
-        type="text"
-        formControlName="clientName"
-        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-        placeholder="e.g. John Smith"
-      />
-      <p *ngIf="submitted && ratingForm.controls['clientName'].errors" class="text-red-500 text-sm mt-1">
-        This field is required.
-      </p>
-    </div>
-
-    <!-- Rating -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-        How would you rate the service? <span class="text-red-500">*</span>
-      </label>
-      <select
-        formControlName="rating"
-        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-      >
-        <option value="">Select a rating</option>
-        <option value="1">1 - Completely Dissatisfied</option>
-        <option value="2">2 - Dissatisfied</option>
-        <option value="3">3 - Neutral</option>
-        <option value="4">4 - Satisfied</option>
-        <option value="5">5 - Completely Satisfied</option>
-      </select>
-      <p *ngIf="submitted && ratingForm.controls['rating'].errors" class="text-red-500 text-sm mt-1">
-        This field is required.
-      </p>
-    </div>
-
-    <!-- Recommend -->
-    <div class="flex items-center">
-      <input
-        type="checkbox"
-        id="wouldRecommend"
-        formControlName="wouldRecommend"
-        class="mr-2 accent-blue-600"
-      />
-      <label for="wouldRecommend" class="text-sm text-gray-700 dark:text-gray-200">
-        Would you book with us again?
-      </label>
-    </div>
-
-    <!-- Testimonial -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-        Additional comments / testimonial
-      </label>
-      <textarea
-        formControlName="testimonial"
-        rows="4"
-        class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-        placeholder="Share your experience..."
-      ></textarea>
-    </div>
-
-    <!-- Submit Button -->
-    <div class="text-center">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Rate Your Service Experience</h1>
       <button
-        type="submit"
-        class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+        (click)="goBack()"
+        class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-300"
       >
-        Submit Rating
+        Back to Dashboard
       </button>
     </div>
-  </form>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="text-gray-600 dark:text-gray-400 mt-4">Loading completed jobs...</p>
+    </div>
+
+    <div *ngIf="!isLoading">
+      <!-- Job Selection -->
+      <div class="mb-8" *ngIf="completedJobs.length > 0">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Select a completed job to rate:</h2>
+        <div class="grid gap-4">
+          <div
+            *ngFor="let job of completedJobs"
+            (click)="selectJobForRating(job.id!)"
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer border-2 transition-all duration-300"
+            [class]="selectedJobId === job.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ job.job_title }}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">{{ job.address }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Date: {{ formatDate(job.date) }} at {{ job.time }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Cleaner: {{ job.cleaner_name }}</p>
+                <p class="text-gray-600 dark:text-gray-400">Duration: {{ job.duration_hours }} hours</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xl font-bold text-gray-800 dark:text-white">KSH {{ job.price }}</p>
+                <span class="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                  Completed
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating Form -->
+      <div *ngIf="selectedJobId" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
+          Rate: {{ getSelectedJob()?.job_title }}
+        </h2>
+
+        <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+          <!-- Rating -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              How would you rate the service? <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="rating"
+              class="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select a rating</option>
+              <option value="1">1 - Completely Dissatisfied</option>
+              <option value="2">2 - Dissatisfied</option>
+              <option value="3">3 - Neutral</option>
+              <option value="4">4 - Satisfied</option>
+              <option value="5">5 - Completely Satisfied</option>
+            </select>
+            <p *ngIf="submitted && ratingForm.controls['rating'].errors" class="text-red-500 text-sm mt-1">
+              Please select a rating.
+            </p>
+          </div>
+
+          <!-- Recommend -->
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="wouldRecommend"
+              formControlName="wouldRecommend"
+              class="mr-3 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label for="wouldRecommend" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Would you recommend this cleaner to others?
+            </label>
+          </div>
+
+          <!-- Testimonial -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+              Additional comments / testimonial (optional)
+            </label>
+            <textarea
+              formControlName="testimonial"
+              rows="4"
+              class="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Share your experience with this cleaner..."
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-between">
+            <button
+              type="button"
+              (click)="selectedJobId = null; ratingForm.reset(); submitted = false;"
+              class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all duration-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="isSubmitting"
+              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 font-semibold disabled:opacity-50"
+            >
+              {{ isSubmitting ? 'Submitting...' : 'Submit Rating' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- No Completed Jobs -->
+      <div *ngIf="completedJobs.length === 0" class="text-center py-12">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
+          <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">No completed jobs to rate</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Complete some cleaning jobs first, then you can rate your experience</p>
+          <button
+            (click)="goBack()"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300"
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>

@@ -34,9 +34,10 @@
       <!-- Submit Button -->
       <button
         type="submit"
-        class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all duration-300 font-semibold"
+        [disabled]="isSubmitting"
+        class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all duration-300 font-semibold disabled:opacity-50"
       >
-        Login
+        {{ isSubmitting ? 'Logging in...' : 'Login' }}
       </button>
 
       <p class="text-center text-gray-600 dark:text-gray-400 mt-4">

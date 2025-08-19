@@ -1,10 +1,11 @@
-const db = require('../config/connection'); // make sure your DB connection is correct
+const db = require('../config/connection');
 
 // GET user profile
 exports.getUserProfile = (req, res) => {
-  const userId = req.body.id;
+  const userId = req.params.id || req.user.id;
 
-  const query = 'SELECT id, fullName, email, location, profilePicture FROM users WHERE id = ?';
+  const query = `SELECT id, fullName, email, phone, location, profilePicture, bio,
+                 skills, experience_years, created_at FROM users WHERE id = ?`;
 
   db.query(query, [userId], (err, results) => {
     if (err) {
@@ -23,14 +24,24 @@ exports.getUserProfile = (req, res) => {
 // UPDATE user profile
 exports.updateUserProfile = (req, res) => {
   const userId = req.params.id;
-  const { fullName, email, location, profilePicture } = req.body;
+  const {
+    fullName,
+    email,
+    phone,
+    location,
+    profilePicture,
+    bio,
+    skills,
+    experience_years
+  } = req.body;
 
   if (!fullName || !email) {
     return res.status(400).json({ success: false, message: 'Name and email are required' });
   }
 
-  const updateSql = 'UPDATE users SET fullName = ?, email = ?, location = ?, profilePicture = ? WHERE id = ?';
-  const values = [fullName, email, location, profilePicture, userId];
+  const updateSql = `UPDATE users SET fullName = ?, email = ?, phone = ?, location = ?,
+                     profilePicture = ?, bio = ?, skills = ?, experience_years = ? WHERE id = ?`;
+  const values = [fullName, email, phone, location, profilePicture, bio, skills, experience_years, userId];
 
   db.query(updateSql, values, (err, result) => {
     if (err) {
@@ -45,7 +56,33 @@ exports.updateUserProfile = (req, res) => {
     res.json({
       success: true,
       message: 'Profile updated successfully',
-      user: { id: userId, fullName, email, location, profilePicture }
+      user: {
+        id: userId,
+        fullName,
+        email,
+        phone,
+        location,
+        profilePicture,
+        bio,
+        skills,
+        experience_years
+      }
     });
+  });
+};
+
+// Get client's bookings
+exports.getClientBookings = (req, res) => {
+  const clientId = req.user.id;
+
+  const sql = `SELECT b.*, cl.fullName as cleaner_name, cl.phone as cleaner_phone
+               FROM bookings b
+               LEFT JOIN users cl ON b.cleaner_id = cl.id
+               WHERE b.client_id = ?
+               ORDER BY b.created_at DESC`;
+
+  db.query(sql, [clientId], (err, results) => {
+    if (err) return res.status(500).json({ message: 'DB error', error: err });
+    res.json(results);
   });
 };
