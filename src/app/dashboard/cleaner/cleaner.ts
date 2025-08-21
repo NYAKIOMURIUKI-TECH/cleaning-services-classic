@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService, Role } from '../../shared/auth.service';
-import { Router } from '@angular/router';
-
-type Section = 'dashboard' | 'bookings' | 'payments' | 'settings' | 'ratings';
 
 interface Booking {
   id: string;
@@ -14,155 +12,210 @@ interface Booking {
   time: string;
   service: string;
   price: number;
-  status: 'new' | 'pending' | 'completed' | 'declined';
-  assignedTo?: string; // "You" when accepted
+  status: string;
+  assignedTo?: string;
 }
-
 
 interface Payment {
   id: string;
   amount: number;
   date: string;
-  status: 'paid' | 'processing';
+  status: string;
 }
 
 interface Rating {
   id: string;
-  stars: number;    // 1–5
+  stars: number;
   comment: string;
   date: string;
 }
 
-
 @Component({
   selector: 'app-cleaner',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './cleaner.html',
-  styleUrl: './cleaner.scss'
+
 })
 export class Cleaner implements OnInit {
-constructor(private auth: AuthService, private router: Router) {}
-   // UI state
-  activeSection: Section = 'dashboard';
-
-  // Profile (editable in Settings)
-   profile = {
+  profile = {
     name: '',
     email: '',
-    photoUrl: '' as string | ArrayBuffer | null
+    photoUrl: 'https://via.placeholder.com/150'
   };
 
-  // Dummy data
-  bookings: Booking[] = [
-    { id: 'B-101', customerName: 'John Doe', address: 'Westlands, Nairobi', date: '2025-08-14', time: '10:00 AM', service: 'Deep Cleaning', price: 4500, status: 'new' },
-    { id: 'B-102', customerName: 'Mary W.', address: 'Kilimani, Nairobi', date: '2025-08-15', time: '2:00 PM', service: 'General Cleaning', price: 2500, status: 'new' },
-    { id: 'B-099', customerName: 'Kevin O.', address: 'Parklands', date: '2025-08-12', time: '9:00 AM', service: 'Carpet Wash', price: 3000, status: 'completed', assignedTo: 'You' }
-  ];
+  bookings: Booking[] = [];
+  payments: Payment[] = [];
+  ratings: Rating[] = [];
+  activeSection: string = 'dashboard';
 
-  payments: Payment[] = [
-    { id: 'P-8801', amount: 3000, date: '2025-08-12', status: 'paid' },
-    { id: 'P-8802', amount: 4500, date: '2025-08-14', status: 'processing' }
-  ];
+  // You'll need to create and inject your AuthService
+  private auth: any = {
+    getUser: () => ({
+      id: 1,
+      fullName: 'John Doe',
+      email: 'john@example.com',
+      photoUrl: 'https://via.placeholder.com/150'
+    })
+  };
 
-  ratings: Rating[] = [
-    { id: 'R-1', stars: 5, comment: 'Excellent job! Very thorough.', date: '2025-08-10' },
-    { id: 'R-2', stars: 4, comment: 'Great work, arrived on time.', date: '2025-08-11' },
-    { id: 'R-3', stars: 5, comment: 'Super clean! Highly recommend.', date: '2025-08-12' }
-  ];
-
-  // Derived stats
-  get averageRating(): number {
-    if (!this.ratings.length) return 0;
-    const sum = this.ratings.reduce((a, r) => a + r.stars, 0);
-    return +(sum / this.ratings.length).toFixed(1);
-  }
-  get totalEarnings(): number {
-    // Sum of PAID + (optionally) completed bookings — keeping it simple: sum paid
-    return this.payments
-      .filter(p => p.status === 'paid')
-      .reduce((a, p) => a + p.amount, 0);
-  }
-  get pendingService(): Booking | undefined {
-    return this.bookings.find(b => b.status === 'pending' && b.assignedTo === 'You');
-  }
-  recentActivity: string[] = [];
+  constructor(
+    private router: Router,
+    private http: HttpClient
+    // Add your actual AuthService here when ready
+  ) {}
 
   ngOnInit(): void {
-    const user = this.auth.getUser(); // Adjust based on your AuthService
+    const user = this.auth.getUser();
     if (!user) {
-      this.router.navigate(['/login']); // Redirect if not logged in
+      this.router.navigate(['/login']);
       return;
     }
 
-    this.profile.name = user.fullName  || '';
+    this.profile.name = user.fullName || '';
     this.profile.email = user.email || '';
-    this.profile.photoUrl = user.photoUrl || '';
+    this.profile.photoUrl = user.photoUrl || 'https://via.placeholder.com/150';
 
-    this.log(`Signed in as cleaner: ${this.profile.name}`);
+    // Use user.id as cleanerId
+    const cleanerId = user.id;
+
+    this.loadBookings(cleanerId);
+    this.loadPayments(cleanerId);
+    this.loadRatings(cleanerId);
   }
 
-  // Section navigation
-  go(section: Section) {
+  loadBookings(cleanerId: number) {
+    this.http.get<Booking[]>(`http://localhost:8080/api/bookings/cleaner/${cleanerId}`)
+      .subscribe({
+        next: (data) => this.bookings = data,
+        error: (err) => {
+          console.error('Error loading bookings:', err);
+          // Fallback to empty array or show error message
+          this.bookings = [];
+        }
+      });
+  }
+
+  loadPayments(cleanerId: number) {
+    this.http.get<Payment[]>(`http://localhost:8080/api/payments/cleaner/${cleanerId}`)
+      .subscribe({
+        next: (data) => this.payments = data,
+        error: (err) => {
+          console.error('Error loading payments:', err);
+          this.payments = [];
+        }
+      });
+  }
+
+  loadRatings(cleanerId: number) {
+    this.http.get<Rating[]>(`http://localhost:8080/api/ratings/cleaner/${cleanerId}`)
+      .subscribe({
+        next: (data) => this.ratings = data,
+        error: (err) => {
+          console.error('Error loading ratings:', err);
+          this.ratings = [];
+        }
+      });
+  }
+
+  // Navigation method
+  go(section: string) {
     this.activeSection = section;
-    this.log(`Navigated to ${section}.`);
   }
 
-  // Bookings actions
-  acceptBooking(id: string) {
-    const b = this.bookings.find(x => x.id === id);
-    if (!b || b.status !== 'new') return;
-    b.status = 'pending';
-    b.assignedTo = 'You';
-    this.log(`Accepted booking ${id}.`);
-    this.activeSection = 'bookings';
+  // Computed properties
+  get totalEarnings(): number {
+    return this.payments
+      .filter(p => p.status === 'paid')
+      .reduce((sum, payment) => sum + payment.amount, 0);
   }
 
-  declineBooking(id: string) {
-    const b = this.bookings.find(x => x.id === id);
-    if (!b || (b.status !== 'new' && b.status !== 'pending')) return;
-    b.status = 'declined';
-    b.assignedTo = undefined;
-    this.log(`Declined booking ${id}.`);
+  get averageRating(): number {
+    if (this.ratings.length === 0) return 0;
+    const sum = this.ratings.reduce((total, rating) => total + rating.stars, 0);
+    return Math.round((sum / this.ratings.length) * 10) / 10;
   }
 
-  completeBooking(id: string) {
-    const b = this.bookings.find(x => x.id === id);
-    if (!b) return;
-    if (b.assignedTo !== 'You' || b.status !== 'pending') {
-      alert('Only the assigned cleaner can mark this as completed.');
-      return;
+  get pendingService(): Booking | null {
+    return this.bookings.find(b => b.status === 'pending') || null;
+  }
+
+  // Booking management methods
+  acceptBooking(bookingId: string) {
+    this.http.patch(`http://localhost:8080/api/bookings/${bookingId}/accept`, {})
+      .subscribe({
+        next: () => {
+          // Update local state
+          const booking = this.bookings.find(b => b.id === bookingId);
+          if (booking) {
+            booking.status = 'pending';
+            booking.assignedTo = 'You';
+          }
+        },
+        error: (err) => console.error('Error accepting booking:', err)
+      });
+  }
+
+  declineBooking(bookingId: string) {
+    this.http.patch(`http://localhost:8080/api/bookings/${bookingId}/decline`, {})
+      .subscribe({
+        next: () => {
+          // Update local state
+          const booking = this.bookings.find(b => b.id === bookingId);
+          if (booking) {
+            booking.status = 'declined';
+          }
+        },
+        error: (err) => console.error('Error declining booking:', err)
+      });
+  }
+
+  completeBooking(bookingId: string) {
+    this.http.patch(`http://localhost:8080/api/bookings/${bookingId}/complete`, {})
+      .subscribe({
+        next: () => {
+          // Update local state
+          const booking = this.bookings.find(b => b.id === bookingId);
+          if (booking) {
+            booking.status = 'completed';
+          }
+        },
+        error: (err) => console.error('Error completing booking:', err)
+      });
+  }
+
+  // Profile management
+  onPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('photo', file);
+
+      // You'll need to implement photo upload endpoint
+      this.http.post<{photoUrl: string}>('http://localhost:8080/api/profile/upload-photo', formData)
+        .subscribe({
+          next: (response) => {
+            this.profile.photoUrl = response.photoUrl;
+          },
+          error: (err) => console.error('Error uploading photo:', err)
+        });
     }
-    b.status = 'completed';
-    this.log(`Completed booking ${id}.`);
-    // Simulate payment moving to "processing" for this completed job
-    this.payments.push({
-      id: 'P-' + Math.floor(Math.random() * 9000 + 1000),
-      amount: b.price,
-      date: new Date().toISOString().split('T')[0],
-      status: 'processing'
-    });
   }
 
-  // Settings actions
   updateProfile() {
-    this.log('Updated profile details.');
-    alert('Profile updated (dummy).');
-  }
+    const profileData = {
+      name: this.profile.name,
+      email: this.profile.email
+    };
 
-  onPhotoSelected(ev: Event) {
-    const input = ev.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => (this.profile.photoUrl = reader.result);
-    reader.readAsDataURL(file);
-    this.log('Updated profile photo.');
-  }
-
-  // Utilities
-  private log(msg: string) {
-    const t = new Date().toLocaleTimeString();
-    this.recentActivity.unshift(`[${t}] ${msg}`);
-    this.recentActivity = this.recentActivity.slice(0, 8);
+    this.http.put('http://localhost:8080/api/profile/update', profileData)
+      .subscribe({
+        next: () => {
+          console.log('Profile updated successfully');
+          // Show success message to user
+        },
+        error: (err) => console.error('Error updating profile:', err)
+      });
   }
 }

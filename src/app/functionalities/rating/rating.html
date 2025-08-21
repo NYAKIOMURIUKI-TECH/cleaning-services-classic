@@ -21,18 +21,18 @@
       </p>
     </div>
 
-    <!-- Customer Name -->
+    <!-- Client Name -->
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
         Your Name <span class="text-red-500">*</span>
       </label>
       <input
         type="text"
-        formControlName="customerName"
+        formControlName="clientName"
         class="w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         placeholder="e.g. John Smith"
       />
-      <p *ngIf="submitted && ratingForm.controls['customerName'].errors" class="text-red-500 text-sm mt-1">
+      <p *ngIf="submitted && ratingForm.controls['clientName'].errors" class="text-red-500 text-sm mt-1">
         This field is required.
       </p>
     </div>

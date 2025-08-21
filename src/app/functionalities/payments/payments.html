@@ -7,8 +7,8 @@
     <ul class="space-y-3">
       <li *ngFor="let booking of completedBookings" class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center">
         <div>
-          <p class="font-medium text-white">{{ booking.service }}</p>
-          <p class="text-sm text-white dark:text-gray-400">{{ booking.date }} at {{ booking.time }} - Status: {{ booking.status }} - Payment: {{ booking.payment }}</p>
+          <p class="font-medium text-gray-800 dark:text-white">{{ booking.service }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.date }} at {{ booking.time }} - Status: {{ booking.status }}</p>
         </div>
         <button 
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
@@ -22,30 +22,46 @@
 
   <!-- Payment Form -->
   <div *ngIf="selectedBooking" class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow">
-    <h4 class="text-lg font-semibold mb-4 text-center text-gray-100">Pay for {{ selectedBooking.service }}</h4>
+    <h4 class="text-lg font-semibold mb-4 text-center text-gray-800 dark:text-white">Pay for {{ selectedBooking.service }}</h4>
 
-    <label class="block mb-2 font-medium text-white">Payment Method:</label>
-    <select [(ngModel)]="paymentMethod" class="w-full mb-4 p-2 rounded border border-gray-300">
+    <label class="block mb-2 font-medium text-gray-800 dark:text-white">Payment Method:</label>
+    <select [(ngModel)]="paymentMethod" class="w-full mb-4 p-2 rounded border border-gray-300 bg-white text-black">
       <option value="" disabled selected>Select a method</option>
       <option value="card">💳 Visa / Card</option>
       <option value="mobile">📱 Mobile Money</option>
     </select>
+
     <!-- Card Form -->
     <div *ngIf="paymentMethod === 'card'">
-      <input type="text" class="w-full p-2 mb-4 rounded border border-gray-300 text-white" placeholder="Card Number" [(ngModel)]="card.number"><br>
-      <input type="text" class="w-full p-2 mb-4 rounded border border-gray-300 text-white" placeholder="Expiry Date (MM/YY)" [(ngModel)]="card.expiry"><br>
-      <input type="text" class="w-full p-2 mb-4 rounded border border-gray-300 text-white" placeholder="CVV (e.g. 123)" [(ngModel)]="card.cvv"><br>
+      <input type="text" 
+             class="w-full p-2 mb-4 rounded border border-gray-300 bg-white text-black" 
+             placeholder="Card Number" 
+             [(ngModel)]="card.number">
+      <input type="text" 
+             class="w-full p-2 mb-4 rounded border border-gray-300 bg-white text-black" 
+             placeholder="Expiry Date (MM/YY)" 
+             [(ngModel)]="card.expiry">
+      <input type="text" 
+             class="w-full p-2 mb-4 rounded border border-gray-300 bg-white text-black" 
+             placeholder="CVV (e.g. 123)" 
+             [(ngModel)]="card.cvv">
     </div>
 
-<!-- Mobile Money Form -->
-<div *ngIf="paymentMethod === 'mobile'">
-  <input type="text" class="w-full p-2 mb-4 rounded border border-gray-300 text-white" placeholder="Phone Number" [(ngModel)]="mobile.phoneNumber"><br>
-</div>
+    <!-- Mobile Money Form -->
+    <div *ngIf="paymentMethod === 'mobile'">
+      <input type="text" 
+             class="w-full p-2 mb-4 rounded border border-gray-300 bg-white text-black" 
+             placeholder="Phone Number" 
+             [(ngModel)]="mobile.phoneNumber">
+    </div>
 
-    <label class="block mb-2 font-medium text-white">Email for Confirmation:</label>
-    <input type="email" [(ngModel)]="email" class="w-full p-2 mb-4 rounded border border-gray-300" placeholder="yourname@example.com" />
+    <label class="block mb-2 font-medium text-gray-800 dark:text-white">Email for Confirmation:</label>
+    <input type="email" 
+           [(ngModel)]="email" 
+           class="w-full p-2 mb-4 rounded border border-gray-300 bg-white text-black" 
+           placeholder="yourname@example.com" />
 
-    <button (click)="pay()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-600">
+    <button (click)="pay()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
       Confirm Payment
     </button>
   </div>

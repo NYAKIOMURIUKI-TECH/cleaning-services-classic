@@ -1,4 +1,4 @@
-<form [formGroup]="settingsForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="p-4 space-y-4">
+<form [formGroup]="settingsForm" (ngSubmit)="onSubmit()" class="p-4 space-y-4">
   <div>
     <label for="profilePicture" class="block text-sm font-medium text-gray-700">Profile Picture</label>
     <input type="file" id="profilePicture" (change)="onFileChange($event)" class="mt-1" />
@@ -9,7 +9,7 @@
 
   <div>
     <label class="block text-sm font-medium text-gray-700">Name</label>
-    <input formControlName="name" type="text" class="mt-1 border p-2 w-full rounded" />
+    <input formControlName="fullName" type="text" class="mt-1 border p-2 w-full rounded" />
   </div>
 
   <div>

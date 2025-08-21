@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ClientService } from '../../services/client.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -9,42 +9,70 @@ import { RouterModule } from '@angular/router';
   selector: 'app-client',
   imports: [FormsModule, CommonModule, HttpClientModule, RouterModule],
   templateUrl: './client.html',
-  styleUrl: './client.scss'
+  styleUrls: ['./client.scss']
 })
 export class Client implements OnInit {
   services: any[] = [];
   myBookings: any[] = [];
-  bookingForm= {
+  bookingForm = {
     serviceId: '',
     date: '',
     time: '',
-    location:'',
-    note:''
   };
-  clientId: number = 1; // Example client ID, replace with actual logic
+  userId: number = 0;
+
   constructor(private clientService: ClientService, private routerModule: RouterModule) {}
+
   ngOnInit(): void {
-      this.clientService.getServices().subscribe(data =>this.services = data);
-      this.clientService.getMyBookings(this.clientId).subscribe(data => this.myBookings = data);
+    this.getUserId();
+    this.loadServices();
+    this.loadMyBookings();
   }
 
-bookService() {
+  getUserId() {
+    const storedUserId = localStorage.getItem('userId') ||
+                         localStorage.getItem('user_id') ||
+                         sessionStorage.getItem('userId') ||
+                         sessionStorage.getItem('user_id');
+
+    if (storedUserId) {
+      this.userId = parseInt(storedUserId);
+      console.log('Found user ID:', this.userId);
+    } else {
+      console.error('No user ID found. Some features may not work.');
+    }
+  }
+
+  loadServices() {
+    // Hardcoded services to avoid 404
+    this.services = [
+      { name: 'Basic Cleaning', description: 'Basic cleaning service' },
+      { name: 'Premium Cleaning', description: 'Deep cleaning' },
+      { name: 'Window Cleaning', description: 'Professional window cleaning' }
+    ];
+  }
+
+  loadMyBookings() {
+    this.clientService.getMyBookings().subscribe({  // <-- No arguments now
+      next: (data: any) => this.myBookings = data,
+      error: (error: any) => console.error('Failed to load bookings:', error)
+    });
+  }
+
+  bookService() {
+    if (!this.userId) return;
+
     const bookingData = {
-      clientId: this.clientId,
-      ...this.bookingForm
+      ...this.bookingForm,
+      clientId: this.userId  // Attach user ID
     };
 
     this.clientService.bookService(bookingData).subscribe({
       next: res => {
         alert('Booking sent!');
-        this.ngOnInit(); // Refresh list
+        this.loadMyBookings(); // Refresh list
       },
-      error: err => alert('Booking failed')
+      error: (err: any) => alert('Booking failed: ' + err.message)
     });
   }
-
-//   logout() {
-//   localStorage.removeItem('token'); // if you're using token auth
-//   this.routerModule.navigate(['/login']);
-// }
 }

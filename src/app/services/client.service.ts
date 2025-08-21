@@ -1,4 +1,3 @@
-// src/app/services/client.service.ts
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -17,7 +16,11 @@ export class ClientService {
     return this.http.post(`${this.apiUrl}/bookings`, data);
   }
 
-  getMyBookings(clientId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/bookings/client/${clientId}`);
+  getMyBookings(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/bookings`);
+  }
+
+  deleteBooking(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/bookings/${id}`);
   }
 }

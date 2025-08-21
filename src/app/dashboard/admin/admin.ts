@@ -3,13 +3,16 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators,FormsModule } from '@angular/forms';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, Inject } from '@angular/core';
+
 
 Chart.register(...registerables);
 @Component({
   selector: 'app-admin',
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.html',
-  styleUrl: './admin.scss'
+  styleUrls: ['./admin.scss']
 })
 export class Admin implements OnInit {
    totalEarnings = 0;
@@ -38,12 +41,14 @@ services = [
    @ViewChild('earningsChart') earningsChartRef!: ElementRef<HTMLCanvasElement>;
    @ViewChild('bookingsChart') bookingsChartRef!: ElementRef<HTMLCanvasElement>;
 
-   constructor(private fb: FormBuilder, private router: Router) {}
+   constructor(private fb: FormBuilder, private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {}
    ngOnInit(): void {
       this.loadDashboardStats();
    }
     ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
     this.createCharts();
+  }
   }
 
   // Example: fetch stats from backend (replace with actual API call)
